@@ -1,5 +1,9 @@
-# nano swp files
+# nano swp files and gedit temp files
 *.swp
+*~
+
+# Ansible
+*.retry
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
