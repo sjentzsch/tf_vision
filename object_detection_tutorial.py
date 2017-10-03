@@ -159,9 +159,11 @@ with detection_graph.as_default():
 #    while(cap.isOpened()):
     while(True):
 
-        W,H = 600,600
         dsp = display.Display()
         root = dsp.screen().root
+        reso = root.get_geometry()
+        W,H = int(reso.width/2),int(reso.height/2)
+        #W,H = 600,600
         raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
         image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
         image_np = np.array(image);
