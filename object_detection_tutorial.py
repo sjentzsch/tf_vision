@@ -17,6 +17,7 @@ import tarfile
 import tensorflow as tf
 import zipfile
 import cv2
+import pyscreenshot as ImageGrab
 
 from collections import defaultdict
 from io import StringIO
@@ -121,6 +122,7 @@ category_index = label_map_util.create_category_index(categories)
 # In[8]:
 
 
+# NOTE: is much faster without .getdata() ?! test!
 def load_image_into_numpy_array(image):
   (im_width, im_height) = image.size
   return np.array(image.getdata()).reshape(
@@ -158,16 +160,27 @@ with detection_graph.as_default():
     detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
     num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
-    while(cap.isOpened()):
-      ret, image_np = cap.read()
-      if not ret:
-        print("Video finished!")
-        break
+#    while(cap.isOpened()):
+    while(True):
+
+      image = ImageGrab.grab(bbox=(0,0,600,600)) # grab(bbox=(10,10,500,500))
+#      image_np = np.array(image) # use this simply ?!
+      image_np_raw = load_image_into_numpy_array(image)
+#      image_np = np.array(image,dtype='uint8').reshape((image.size[1],image.size[0],3))
+      image_np = cv2.cvtColor(image_np_raw, cv2.COLOR_BGR2RGB)
+
+#      ret, image_np = cap.read()
+#      if not ret:
+#        print("Video finished!")
+#        break
+
 #    for image_path in TEST_IMAGE_PATHS:
 #      image = Image.open(image_path)
       # the array based representation of the image will be used later in order to prepare the
       # result image with boxes and labels on it.
 #      image_np = load_image_into_numpy_array(image)
+
+
       # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
       image_np_expanded = np.expand_dims(image_np, axis=0)
       # Actual detection.
