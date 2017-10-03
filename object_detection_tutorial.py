@@ -16,8 +16,10 @@ import sys
 import tarfile
 import tensorflow as tf
 import zipfile
+import time
 import cv2
-import pyscreenshot as ImageGrab
+
+from Xlib import display, X
 
 from collections import defaultdict
 from io import StringIO
@@ -117,17 +119,6 @@ categories = label_map_util.convert_label_map_to_categories(label_map, max_num_c
 category_index = label_map_util.create_category_index(categories)
 
 
-# ## Helper code
-
-# In[8]:
-
-
-# NOTE: is much faster without .getdata() ?! test!
-def load_image_into_numpy_array(image):
-  (im_width, im_height) = image.size
-  return np.array(image.getdata()).reshape(
-      (im_height, im_width, 3)).astype(np.uint8)
-
 
 # # Detection
 
@@ -160,14 +151,23 @@ with detection_graph.as_default():
     detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
     num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
+    # for frame rate calculation
+    start_time = time.time()
+    x = 3 # displays the frame rate every x seconds
+    counter = 0
+
 #    while(cap.isOpened()):
     while(True):
 
-      image = ImageGrab.grab(bbox=(0,0,600,600)) # grab(bbox=(10,10,500,500))
-#      image_np = np.array(image) # use this simply ?!
-      image_np_raw = load_image_into_numpy_array(image)
-#      image_np = np.array(image,dtype='uint8').reshape((image.size[1],image.size[0],3))
-      image_np = cv2.cvtColor(image_np_raw, cv2.COLOR_BGR2RGB)
+        W,H = 600,600
+        dsp = display.Display()
+        root = dsp.screen().root
+        raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
+        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
+        image_np = np.array(image);
+
+      #image_np_bgr = np.array(ImageGrab.grab(bbox=(0,0,600,600))) # grab(bbox=(10,10,500,500)) or just grab()
+      #image_np = cv2.cvtColor(image_np_bgr, cv2.COLOR_BGR2RGB)
 
 #      ret, image_np = cap.read()
 #      if not ret:
@@ -181,25 +181,31 @@ with detection_graph.as_default():
 #      image_np = load_image_into_numpy_array(image)
 
 
-      # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-      image_np_expanded = np.expand_dims(image_np, axis=0)
-      # Actual detection.
-      (boxes, scores, classes, num) = sess.run(
-          [detection_boxes, detection_scores, detection_classes, num_detections],
-          feed_dict={image_tensor: image_np_expanded})
-      # Visualization of the results of a detection.
-      vis_util.visualize_boxes_and_labels_on_image_array(
-          image_np,
-          np.squeeze(boxes),
-          np.squeeze(classes).astype(np.int32),
-          np.squeeze(scores),
-          category_index,
-          use_normalized_coordinates=True,
-          line_thickness=8)
+        # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
+#        image_np_expanded = np.expand_dims(image_np, axis=0)
+        # Actual detection.
+#        (boxes, scores, classes, num) = sess.run(
+#            [detection_boxes, detection_scores, detection_classes, num_detections],
+#            feed_dict={image_tensor: image_np_expanded})
+        # Visualization of the results of a detection.
+#        vis_util.visualize_boxes_and_labels_on_image_array(
+#            image_np,
+#            np.squeeze(boxes),
+#            np.squeeze(classes).astype(np.int32),
+#            np.squeeze(scores),
+#            category_index,
+#            use_normalized_coordinates=True,
+#            line_thickness=8)
 
-      cv2.imshow('object detection', image_np) # alternatively as 2nd param: cv2.resize(image_np, (800, 600)))
-      if cv2.waitKey(25) & 0xFF == ord('q'):
-        break
+        cv2.imshow('object detection', image_np) # alternatively as 2nd param: cv2.resize(image_np, (800, 600)))
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        counter+=1
+        if (time.time() - start_time) > x :
+            print("FPS: ", counter / (time.time() - start_time))
+            counter = 0
+            start_time = time.time()
 
 cap.release()
 cv2.destroyAllWindows()
