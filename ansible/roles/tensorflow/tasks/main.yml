@@ -1,5 +1,51 @@
 ---
 
-# install tensorflow
+- name: Update apt cache (if not within last 24h)
+  apt: update_cache=yes cache_valid_time=86400
+  become: yes
+
+- name: Install common packages (mostly python and pip)
+  apt: name={{item}} state=latest
+  with_items:
+    - aptitude
+    - python-dev
+    - python3-dev
+    - python-pip
+    - python3-pip
+    - unzip
+    - debconf
+    - debconf-utils
+  become: yes
+
+- name: Upgrade to latest pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+    executable: "{{ item }}"
+  with_items:
+    - pip2
+    - pip3
+  become: yes
+
+# install tensorflow requirements for GPU acceleration
 - include_tasks: tf_gpu_req.yml
   when: tf_enable_gpu
+
+- name: Install latest tensorflow with native pip3 (no GPU support)
+  pip:
+    name: tensorflow
+    state: latest
+    executable: pip3
+  become: yes
+  when: not tf_build_from_source and not tf_enable_gpu
+
+- name: Install latest tensorflow with native pip3 (with GPU support)
+  pip:
+    name: tensorflow-gpu
+    state: latest
+    executable: pip3
+  become: yes
+  when: not tf_build_from_source and tf_enable_gpu
+
+# Todo decide: Include https://www.tensorflow.org/install/install_linux#protobuf_pip_package_31 ?!
+
