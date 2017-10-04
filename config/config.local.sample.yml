@@ -5,5 +5,5 @@
 
 ## Tensorflow
 
-build_from_source: false
-enable_gpu: false
+tf_build_from_source: false
+tf_enable_gpu: false
