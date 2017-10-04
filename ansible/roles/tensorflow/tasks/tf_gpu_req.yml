@@ -15,6 +15,7 @@
 
 - name: Set environment setup variables for CUDA
   set_fact:
+    cuda_env_home: /usr/local/cuda-9.0
     cuda_env_path: /usr/local/cuda-9.0/bin
     cuda_env_ldlibpath: /usr/local/cuda-9.0/lib64
 
@@ -32,6 +33,13 @@
     dest: /etc/environment
     state: present
     line: 'LD_LIBRARY_PATH="{{ cuda_env_ldlibpath }}"'
+  become: yes
+
+- name: Set CUDA_HOME entry with {{ cuda_env_home }}
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    line: 'CUDA_HOME="{{ cuda_env_home }}"'
   become: yes
 
 - name: Install NVIDIA CUDA Profile Tools Interface recommended by tensorflow

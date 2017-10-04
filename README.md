@@ -38,13 +38,23 @@ For GPU-accelerated tensorflow under Ubuntu 16.04 x86_64, ensure you do or have 
 
 3. Install latest NVIDIA CUDA Deep Neural Network library (cuDNN)
 
-   Download latest version at https://developer.nvidia.com/rdp/cudnn-download
+   First, you need to register for the NVIDIA Developer Program at https://developer.nvidia.com/accelerated-computing-developer
 
-  * cuDNN v7.0 Library for Linux
+   Then, download latest version at https://developer.nvidia.com/rdp/cudnn-download of the following Debian Files:
+
   * cuDNN v7.0 Runtime Library for Ubuntu16.04 (Deb)
   * cuDNN v7.0 Developer Library for Ubuntu16.04 (Deb)
+  * cuDNN v7.0 Code Samples and User Guide for Ubuntu16.04 (Deb)
 
-   See also the Installation Guide (`cuDNN Install Guide`)
+   Install Debians via (e.g.):
+
+   ```
+   sudo dpkg -i libcudnn7_7.0.3.11-1+cuda9.0_amd64.deb
+   sudo dpkg -i libcudnn7-dev_7.0.3.11-1+cuda9.0_amd64.deb
+   sudo dpkg -i libcudnn7-doc_7.0.3.11-1+cuda9.0_amd64.deb
+   ```
+
+   For further information, see also the Installation Guide (`cuDNN Install Guide`) available at their site.
 
 # Installation
 
