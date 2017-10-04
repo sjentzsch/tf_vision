@@ -1,0 +1,41 @@
+---
+
+- name: Install third-party libraries recommended by CUDA
+  apt: name={{ item }} state=latest
+  with_items:
+    - g++
+    - freeglut3-dev
+    - build-essential
+    - libx11-dev
+    - libxmu-dev
+    - libxi-dev
+    - libglu1-mesa
+    - libglu1-mesa-dev
+  become: yes
+
+- name: Set environment setup variables for CUDA
+  set_fact:
+    cuda_env_path: /usr/local/cuda-9.0/bin
+    cuda_env_ldlibpath: /usr/local/cuda-9.0/lib64
+
+- name: Add {{ cuda_env_path }} to PATH
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    backrefs: yes
+    regexp: '^PATH=(["]*)((?!.*?{{cuda_env_path}}).*?)(["]*)$'
+    line: 'PATH=\1\2:{{cuda_env_path}}\3'
+  become: yes
+
+- name: Set LD_LIBRARY_PATH entry with {{ cuda_env_ldlibpath }}
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    line: 'LD_LIBRARY_PATH="{{ cuda_env_ldlibpath }}"'
+  become: yes
+
+- name: Install NVIDIA CUDA Profile Tools Interface recommended by tensorflow
+  apt: name={{ item }} state=latest
+  with_items:
+    - libcupti-dev
+  become: yes

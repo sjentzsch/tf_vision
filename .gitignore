@@ -1,3 +1,6 @@
+# our custom Ansible configuration
+config/config.local.yml
+
 # nano swp files and gedit temp files
 *.swp
 *~

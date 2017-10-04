@@ -6,6 +6,6 @@
 
   - { role: provisioning_metadata_start, tags: ['always'] }
 
-#  - { role: local_backup_restore, tags: ['local_backup_restore'] }
+  - { role: tensorflow, tags: ['tensorflow'] }
 
   - { role: provisioning_metadata_end, tags: ['always'] }

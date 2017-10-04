@@ -1,0 +1,5 @@
+---
+
+# install tensorflow
+- include_tasks: tf_gpu_req.yml
+  when: tf_enable_gpu
