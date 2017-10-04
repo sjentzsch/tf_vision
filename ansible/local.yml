@@ -2,10 +2,10 @@
 - hosts: local
 
   roles:
-#  - { role: local_load_config, tags: ['always'] }
+  - { role: local_load_config, tags: ['always'] }
 
-#  - { role: provisioning_metadata_start, tags: ['always'] }
+  - { role: provisioning_metadata_start, tags: ['always'] }
 
 #  - { role: local_backup_restore, tags: ['local_backup_restore'] }
 
-#  - { role: provisioning_metadata_end, tags: ['always'] }
+  - { role: provisioning_metadata_end, tags: ['always'] }
