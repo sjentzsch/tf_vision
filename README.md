@@ -7,13 +7,15 @@ https://github.com/tensorflow/models/tree/master/research/object_detection
 
 For GPU-accelerated tensorflow under Ubuntu 16.04 x86_64, ensure you do or have done the following: 
 
-1. You have a GPU with CUDA Compute Capability 3.0 or higher. Check via https://developer.nvidia.com/cuda-gpus for a list of supported GPU cards, and `lspci | grep -i nvidia` shows your current GPU
+1. You have a GPU with CUDA Compute Capability 3.0 or higher.  
+   Check via https://developer.nvidia.com/cuda-gpus for a list of supported GPU cards.  
+   The command `lspci | grep -i nvidia` shows your current GPU.
 
 2. Check if you are using the latest (proprietary) NVIDIA binary drivers: 
 
-   Check remotely available on http://www.nvidia.com/Download/index.aspx?lang=en-us
+   Check remotely available ones on http://www.nvidia.com/Download/index.aspx?lang=en-us
 
-   Check locally installed via `cat /proc/driver/nvidia/version`
+   Check locally installed one via `cat /proc/driver/nvidia/version`
 
    Add the Ubuntu PPA (https://launchpad.net/~graphics-drivers/+archive/ubuntu/ppa?field.series_filter=xenial):
 
@@ -22,7 +24,7 @@ For GPU-accelerated tensorflow under Ubuntu 16.04 x86_64, ensure you do or have 
    sudo apt-get update
    ```
 
-   Then switch to respective latest stable version branch (System Settings -> Software & Updates -> Additional Drivers)
+   Then switch to respective latest stable version branch (System Settings -> Software & Updates -> Additional Drivers).
 
 3. Install latest CUDA:
 
@@ -32,9 +34,11 @@ For GPU-accelerated tensorflow under Ubuntu 16.04 x86_64, ensure you do or have 
 
    To uninstall previous versions please refer to: http://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#handle-uninstallation
 
-   Our Ansible provisioning will take care of setting PATH and LD_LIBRARY_PATH environment variables properly.
+   Note: Our Ansible provisioning will take care of setting PATH and LD_LIBRARY_PATH environment variables properly.
 
-3. Install latest NVIDIA CUDA Deep Neural Network library (cuDNN): https://developer.nvidia.com/rdp/cudnn-download
+3. Install latest NVIDIA CUDA Deep Neural Network library (cuDNN)
+
+   Download latest version at https://developer.nvidia.com/rdp/cudnn-download
 
   * cuDNN v7.0 Library for Linux
   * cuDNN v7.0 Runtime Library for Ubuntu16.04 (Deb)
