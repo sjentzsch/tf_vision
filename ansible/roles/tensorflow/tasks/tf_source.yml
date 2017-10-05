@@ -1,0 +1,35 @@
+---
+
+- name: Clone the TensorFlow and set branch to '{{ tf_repo_branch }}'
+  git:
+    repo: https://github.com/tensorflow/tensorflow.git
+    dest: "../../tensorflow"
+    force: yes
+    version: "{{ tf_repo_branch }}"
+  register: tf_repo_state
+
+- name: Install JDK 8 needed for Bazel
+  apt: name=openjdk-8-jdk state=latest
+  become: yes
+
+- name: Add Bazel distribution URI as a package source
+  apt_repository:
+    repo: deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8
+    state: present
+    filename: 'bazel'
+  register: bazel_pck_source
+  become: yes
+
+- name: Add apt key for Bazel package source
+  apt_key:
+    url: https://bazel.build/bazel-release.pub.gpg
+  become: yes
+
+# Note: Latest Babel 0.6 not (yet?) compatible with tf 1.3 branch! waiting for 1.4!
+#- name: Install (or upgrade) Bazel
+#  apt:
+#    name: bazel
+#    state: latest
+#    allow_unauthenticated: yes
+#    update_cache: "{{ 'yes' if bazel_pck_source.changed else 'no'}}"
+#  become: yes

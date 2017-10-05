@@ -6,4 +6,6 @@
 ## Tensorflow
 
 tf_build_from_source: false
+tf_repo_branch: v1.3.1
+
 tf_enable_gpu: false

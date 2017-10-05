@@ -12,6 +12,8 @@
     - python3-dev
     - python-pip
     - python3-pip
+    - python3-numpy
+    - python3-wheel
     - unzip
     - debconf
     - debconf-utils
@@ -49,3 +51,6 @@
 
 # Todo decide: Include https://www.tensorflow.org/install/install_linux#protobuf_pip_package_31 ?!
 
+# Install latest tensorflow from source
+- include_tasks: tf_source.yml
+  when: tf_build_from_source
