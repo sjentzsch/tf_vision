@@ -1,7 +1,5 @@
 ---
 
-#- include: ffmpeg.yml
-
 - name: Check if OpenCV {{ opencv_version }} is already installed
   stat: path="/usr/local/lib/libopencv_core.so.{{ opencv_version }}"
   register: opencv_installed
@@ -80,11 +78,12 @@
     - name: Ensure build folder inside OpenCV repo
       file: path="../../opencv/build" state=directory
 
-    - name: CMake for OpenCV (no CUDA for now as benefit for python is very limited)
+    - name: CMake for OpenCV (no CUDA for now as not yet compatible with 9.0 and benefit for python is very limited)
       shell: >
         /bin/bash -ic "cmake
         -D CMAKE_BUILD_TYPE=RELEASE
         -D CMAKE_INSTALL_PREFIX=/usr/local
+        -D WITH_CUDA=OFF
         -D WITH_TBB=ON
         -D WITH_V4L=ON
         -D WITH_QT=ON
