@@ -25,7 +25,7 @@ from collections import defaultdict
 from io import StringIO
 from PIL import Image
 
-cap = cv2.VideoCapture('../../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4')
+cap = cv2.VideoCapture('../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4')
 
 # ## Env setup
 
@@ -33,9 +33,9 @@ cap = cv2.VideoCapture('../../opencv_extra/testdata/highgui/video/big_buck_bunny
 
 
 # This is needed since the notebook is stored in the object_detection folder.
-sys.path.append('../models/research')
-sys.path.append('../models/research/slim')
-sys.path.append('../models/research/object_detection')
+sys.path.append('../tensorflow_models/research')
+sys.path.append('../tensorflow_models/research/slim')
+sys.path.append('../tensorflow_models/research/object_detection')
 #sys.path.append("..")
 
 
@@ -70,7 +70,7 @@ DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
 PATH_TO_CKPT = '../' + MODEL_NAME + '/frozen_inference_graph.pb'
 
 # List of the strings that is used to add correct label for each box.
-PATH_TO_LABELS = os.path.join('../models/research/object_detection/data', 'mscoco_label_map.pbtxt')
+PATH_TO_LABELS = os.path.join('../tensorflow_models/research/object_detection/data', 'mscoco_label_map.pbtxt')
 
 NUM_CLASSES = 90
 
@@ -184,20 +184,20 @@ with detection_graph.as_default():
 
 
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-#        image_np_expanded = np.expand_dims(image_np, axis=0)
+        image_np_expanded = np.expand_dims(image_np, axis=0)
         # Actual detection.
-#        (boxes, scores, classes, num) = sess.run(
-#            [detection_boxes, detection_scores, detection_classes, num_detections],
-#            feed_dict={image_tensor: image_np_expanded})
+        (boxes, scores, classes, num) = sess.run(
+            [detection_boxes, detection_scores, detection_classes, num_detections],
+            feed_dict={image_tensor: image_np_expanded})
         # Visualization of the results of a detection.
-#        vis_util.visualize_boxes_and_labels_on_image_array(
-#            image_np,
-#            np.squeeze(boxes),
-#            np.squeeze(classes).astype(np.int32),
-#            np.squeeze(scores),
-#            category_index,
-#            use_normalized_coordinates=True,
-#            line_thickness=8)
+        vis_util.visualize_boxes_and_labels_on_image_array(
+            image_np,
+            np.squeeze(boxes),
+            np.squeeze(classes).astype(np.int32),
+            np.squeeze(scores),
+            category_index,
+            use_normalized_coordinates=True,
+            line_thickness=8)
 
         cv2.imshow('object detection', image_np) # alternatively as 2nd param: cv2.resize(image_np, (800, 600)))
         if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -2,8 +2,8 @@
 
 #- include: ffmpeg.yml
 
-- name: Check if OpenCV is already installed
-  stat: path=/usr/local/lib/libopencv_core.so.3.1.0
+- name: Check if OpenCV {{ opencv_version }} is already installed
+  stat: path="/usr/local/lib/libopencv_core.so.{{ opencv_version }}"
   register: opencv_installed
 
 - name: Install OpenCV dependencies
@@ -52,24 +52,32 @@
     - doxygen
   become: yes
 
+- name: Clone OpenCV repo and set branch to '{{ opencv_repo_branch }}'
+  git:
+    repo: https://github.com/opencv/opencv.git
+    dest: ../../opencv
+    force: yes
+    version: "{{ opencv_repo_branch }}"
+  register: opencv_repo_state
+
+- name: Clone OpenCV contrib repo and set branch to '{{ opencv_contrib_repo_branch }}'
+  git:
+    repo: https://github.com/opencv/opencv_contrib.git
+    dest: ../../opencv_contrib
+    force: yes
+    version: "{{ opencv_contrib_repo_branch }}"
+  register: opencv_contrib_repo_state
+
+- name: Clone OpenCV extra repo and set branch to '{{ opencv_extra_repo_branch }}'
+  git:
+    repo: https://github.com/opencv/opencv_extra.git
+    dest: ../../opencv_extra
+    force: yes
+    version: "{{ opencv_extra_repo_branch }}"
+  register: opencv_extra_repo_state
+
 - block:
-    - name: Clone OpenCV repo and set branch to '{{ opencv_repo_branch }}'
-      git:
-        repo: https://github.com/opencv/opencv.git
-        dest: ../../opencv
-        force: yes
-        version: "{{ opencv_repo_branch }}"
-      register: opencv_repo_state
-
-    - name: Clone OpenCV extra modules repo and set branch to '{{ opencv_contrib_repo_branch }}'
-      git:
-        repo: https://github.com/opencv/opencv_contrib.git
-        dest: ../../opencv_contrib
-        force: yes
-        version: "{{ opencv_contrib_repo_branch }}"
-      register: opencv_contrib_repo_state
-
-    - name: Create build folder inside OpenCV repo
+    - name: Ensure build folder inside OpenCV repo
       file: path="../../opencv/build" state=directory
 
     - name: CMake for OpenCV (no CUDA for now as benefit for python is very limited)
@@ -84,37 +92,37 @@
         -D WITH_OPENGL=ON
         -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules
         -D WITH_IPP=ON
+        -D PYTHON_DEFAULT_EXECUTABLE=$(which python3)
         -D INSTALL_PYTHON_EXAMPLES=ON
+        -D BUILD_PERF_TESTS=OFF
+        -D BUILD_TESTS=OFF
+        -D BUILD_DOCS=OFF
         -D ENABLE_FAST_MATH=1 .."
       args:
         chdir: "../../opencv/build"
 
-#        -D WITH_CUDA=ON
-#        -D CUDA_FAST_MATH=1
-#        -D WITH_CUBLAS=1
+    - name: Build OpenCV {{ opencv_version }} (takes about 10 minutes)
+      shell: make -j$(nproc)
+      args:
+        chdir: "../../opencv/build"
 
-#    - name: Build OpenCV
-#      make: target=all
-#      args:
-#        chdir: "/home/{{ ansible_user_id }}/opencv-3.1.0/release"
-
-#    - name: Install OpenCV
-#      make: target=install
-#      args:
-#        chdir: "/home/{{ ansible_user_id }}/opencv-3.1.0/release"
-#      become: yes
+    - name: Install OpenCV {{ opencv_version }}
+      make: target=install
+      args:
+        chdir: "../../opencv/build"
+      become: yes
   when:
     - not opencv_installed.stat.exists
 
-#- name: Add /usr/local/lib to system library paths
-#  lineinfile:
-#    dest: /etc/ld.so.conf.d/opencv.conf
-#    create: yes
-#    line: /usr/local/lib
-#  become: yes
-#  register: add_usr_local_libs
+- name: Add /usr/local/lib to system library paths
+  lineinfile:
+    dest: /etc/ld.so.conf.d/opencv.conf
+    create: yes
+    line: /usr/local/lib
+  become: yes
+  register: add_usr_local_libs
 
-#- name: Reload list of system-wide library paths
-#  command: ldconfig
-#  become: yes
-#  when: add_usr_local_libs.changed
+- name: Reload list of system-wide library paths
+  command: ldconfig
+  become: yes
+  when: add_usr_local_libs.changed
