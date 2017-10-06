@@ -1,9 +1,9 @@
 ---
 
-- name: Clone the TensorFlow and set branch to '{{ tf_repo_branch }}'
+- name: Clone the TensorFlow to '{{ tf_repo_name }}' and set branch to '{{ tf_repo_branch }}'
   git:
     repo: https://github.com/tensorflow/tensorflow.git
-    dest: "../../tensorflow"
+    dest: "../../{{ tf_repo_name }}"
     force: yes
     version: "{{ tf_repo_branch }}"
   register: tf_repo_state

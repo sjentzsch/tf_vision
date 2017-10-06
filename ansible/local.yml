@@ -8,6 +8,8 @@
 
   - { role: tensorflow, tags: ['tensorflow'] }
 
+  - { role: tensorflow_models, tags: ['tensorflow_models'] }
+
   - { role: tf_object_detection, tags: ['tf_object_detection,'] }
 
   - { role: provisioning_metadata_end, tags: ['always'] }

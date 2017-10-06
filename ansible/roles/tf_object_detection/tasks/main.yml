@@ -1,5 +1,23 @@
 ---
 
+- name: Install dependencies through apt
+  apt: name={{ item }} state=latest
+  with_items:
+    - protobuf-compiler
+  become: yes
+
+- name: Install dependencies through pip
+  pip:
+    name: "{{ item }}"
+    state: latest
+    executable: pip3
+  with_items:
+    - pillow
+    - lxml
+    - jupyter
+    - matplotlib
+  become: yes
+
 - name: Install xlib required for screen capturing
   apt: name={{ item }} state=latest
   with_items:
@@ -7,17 +25,13 @@
     - libx11-dev
   become: yes
 
-#- name: Install dependencies through pip
-#  pip:
-#    name: {{ item }}
-#    state: latest
-#    executable: pip3
-#  with_items:
-#    - 
-#    - 
-#  become: yes
-
 - name: Setup Bazel required for ???
   import_role:
     name: bazel
     allow_duplicates: false
+
+- name: Compile the Protobuf libraries used by TensorFlow Object Detection API
+  shell: protoc object_detection/protos/*.proto --python_out=.
+  args:
+    chdir: "../../{{ tf_models_repo_name }}/research/"
+
