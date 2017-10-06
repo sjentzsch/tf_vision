@@ -25,7 +25,8 @@ from collections import defaultdict
 from io import StringIO
 from PIL import Image
 
-cap = cv2.VideoCapture('../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4')
+cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture('../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4')
 
 # ## Env setup
 
@@ -156,25 +157,27 @@ with detection_graph.as_default():
     x = 3 # displays the frame rate every x seconds
     counter = 0
 
-#    while(cap.isOpened()):
-    while(True):
+    windowPlacedYet = False
+
+    while(cap.isOpened()):
+#    while(True):
 
         dsp = display.Display()
         root = dsp.screen().root
         reso = root.get_geometry()
-        W,H = int(reso.width/2),int(reso.height/2)
+#        W,H = int(reso.width/2),int(reso.height/2)
         #W,H = 600,600
-        raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
-        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
-        image_np = np.array(image);
+#        raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
+#        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
+#        image_np = np.array(image);
 
-      #image_np_bgr = np.array(ImageGrab.grab(bbox=(0,0,600,600))) # grab(bbox=(10,10,500,500)) or just grab()
-      #image_np = cv2.cvtColor(image_np_bgr, cv2.COLOR_BGR2RGB)
+#        image_np_bgr = np.array(ImageGrab.grab(bbox=(0,0,600,600))) # grab(bbox=(10,10,500,500)) or just grab()
+#        image_np = cv2.cvtColor(image_np_bgr, cv2.COLOR_BGR2RGB)
 
-#      ret, image_np = cap.read()
-#      if not ret:
-#        print("Video finished!")
-#        break
+        ret, image_np = cap.read()
+        if not ret:
+          print("Video finished!")
+          break
 
 #    for image_path in TEST_IMAGE_PATHS:
 #      image = Image.open(image_path)
@@ -202,6 +205,9 @@ with detection_graph.as_default():
         cv2.imshow('object detection', image_np) # alternatively as 2nd param: cv2.resize(image_np, (800, 600)))
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+        if not windowPlacedYet:
+          cv2.moveWindow('object detection', (int)(reso.width/3), (int)(reso.height/3))
+          windowPlacedYet = True
 
         counter+=1
         if (time.time() - start_time) > x :
