@@ -31,7 +31,22 @@
       file: path="/home/{{ ansible_user_id }}/opencv-3.1.0/release" state=directory 
 
     - name: CMake for OpenCV
-      shell: /bin/bash -ic "cmake -DCMAKE_BUILD_TYPE=RELEASE -DWITH_TBB=ON -DWITH_V4L=ON -DWITH_QT=ON -DWITH_IPP=ON -DWITH_OPENGL=ON -DENABLE_FAST_MATH=1 -DWITH_OPENCL=ON .."
+      shell: |
+        /bin/bash -ic "cmake
+        -D CMAKE_BUILD_TYPE=RELEASE
+        -D CMAKE_INSTALL_PREFIX=/usr/local
+        -D WITH_TBB=ON
+        -D WITH_V4L=ON
+        -D WITH_QT=ON
+        -D USE_GStreamer=ON
+        -D WITH_OPENGL=ON
+        -D WITH_CUDA=ON # TODO!
+        -D CUDA_FAST_MATH=1 # TODO!
+        -D WITH_CUBLAS=1
+        -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules
+        -D WITH_IPP=ON
+        -D INSTALL_PYTHON_EXAMPLES=ON
+        -D ENABLE_FAST_MATH=1 .."
       args:
         chdir: "/home/{{ ansible_user_id }}/opencv-3.1.0/release"
 
