@@ -13,3 +13,8 @@ tf_repo_branch: v1.3.1
 
 tf_models_repo_name: tensorflow_models
 tf_models_repo_branch: master
+
+## OpenCV
+
+opencv_repo_branch: 3.3.0
+opencv_contrib_repo_branch: 3.3.0

@@ -16,6 +16,12 @@
     - lxml
     - jupyter
     - matplotlib
+    - numpy
+    - scipy
+    - pandas
+    - scikit-image
+    - scikit-learn
+    - ipython[all]
   become: yes
 
 - name: Install xlib required for screen capturing
@@ -25,9 +31,9 @@
     - libx11-dev
   become: yes
 
-- name: Setup Bazel required for ???
+- name: Setup OpenCV
   import_role:
-    name: bazel
+    name: opencv
     allow_duplicates: false
 
 - name: Compile the Protobuf libraries used by TensorFlow Object Detection API
