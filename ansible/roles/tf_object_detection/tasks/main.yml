@@ -16,3 +16,8 @@
 #    - 
 #    - 
 #  become: yes
+
+- name: Setup Bazel required for ???
+  import_role:
+    name: bazel
+    allow_duplicates: false
