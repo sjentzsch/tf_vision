@@ -1,0 +1,62 @@
+---
+
+- include: ffmpeg.yml
+
+- name: Check if OpenCV is already installed
+  stat: path=/usr/local/lib/libopencv_core.so.3.1.0
+  register: opencv_installed
+
+- name: Install OpenCV Dependencies
+  apt: name={{ item }} state=latest
+  with_items:
+    - build-essential
+    - libgtk2.0-dev
+    - pkg-config
+    - libavcodec-dev
+    - libavformat-dev
+    - libswscale-dev
+    - python-dev
+    - python-numpy
+    - libtbb-dev
+    - libjpeg-dev
+    - libjasper-dev
+    - libdc1394-22-dev
+  become: yes
+
+- block:
+    - name: Download OpenCV
+      unarchive: src=https://github.com/Itseez/opencv/archive/3.1.0.zip dest=/home/{{ ansible_user_id }} copy=no creates=/home/{{ ansible_user_id }}/opencv-3.1.0
+
+    - name: Create Build folder for OpenCV
+      file: path="/home/{{ ansible_user_id }}/opencv-3.1.0/release" state=directory 
+
+    - name: CMake for OpenCV
+      shell: /bin/bash -ic "cmake -DCMAKE_BUILD_TYPE=RELEASE -DWITH_TBB=ON -DWITH_V4L=ON -DWITH_QT=ON -DWITH_IPP=ON -DWITH_OPENGL=ON -DENABLE_FAST_MATH=1 -DWITH_OPENCL=ON .."
+      args:
+        chdir: "/home/{{ ansible_user_id }}/opencv-3.1.0/release"
+
+    - name: Build OpenCV
+      make: target=all
+      args:
+        chdir: "/home/{{ ansible_user_id }}/opencv-3.1.0/release"
+
+    - name: Install OpenCV
+      make: target=install
+      args:
+        chdir: "/home/{{ ansible_user_id }}/opencv-3.1.0/release"
+      become: yes
+  when:
+    - not opencv_installed.stat.exists
+
+- name: Add /usr/local/lib to system library paths
+  lineinfile:
+    dest: /etc/ld.so.conf.d/opencv.conf
+    create: yes
+    line: /usr/local/lib
+  become: yes
+  register: add_usr_local_libs
+
+- name: Reload list of system-wide library paths
+  command: ldconfig
+  become: yes
+  when: add_usr_local_libs.changed
