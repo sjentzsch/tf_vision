@@ -91,4 +91,10 @@ ansible-playbook -i hosts -v local.yml -K
 
 Ansible will immediately ask you for your sudo password, as packages etc. will need to be installed through root user.
 
+# Run
 
+Inside `ml/tf_vision/` run:
+
+```
+python3 object_detection_tutorial.py
+```
