@@ -1,9 +1,17 @@
 # tf_vision
-Playground for deep learning with tensorflow in the field of robot vision (let's see where this leads to)
 
-Derived from tensorflow research model object_detection:
+On 15th June 2017 Google released their (pretrained) Computer Vision models via the TensorFlow Object Detection API.  
+These models won the COCO detection challenge (http://cocodataset.org/) 2016. COCO features a large-scale dataset with more than 200k labeled images, 80 object categories and 250k people with keypoints.  
 
-https://github.com/tensorflow/models/tree/master/research/object_detection
+With this repository, I am deriving from the TensorFlow research model object_detection and trying to put all things together, to do fancy things incl. infering on live video data. Applying it to Robotics is one of the major goals.
+
+Find here some highly recommended links:
+* Google announcement: https://research.googleblog.com/2017/06/supercharge-your-computer-vision-models.html
+* COCO detection challenge (and of course the dataset, results ...): http://cocodataset.org/
+* CVPR 2017 Paper describing the models in detail: https://arxiv.org/abs/1611.10012
+* TensorFlow research model and object_detection API: https://github.com/tensorflow/models/tree/master/research/object_detection
+
+# GPU Acceleration
 
 For GPU-accelerated tensorflow under Ubuntu 16.04 x86_64, ensure you do or have done the following: 
 
