@@ -1,19 +1,21 @@
 # tf_vision
 
 On 15th June 2017 Google released their (pretrained) Computer Vision models via the TensorFlow Object Detection API.  
-These models won the COCO detection challenge (http://cocodataset.org/) 2016. COCO features a large-scale dataset with more than 200k labeled images, 80 object categories and 250k people with keypoints.  
+These models won the COCO detection challenge (http://cocodataset.org/) in 2016. COCO features a large-scale dataset with more than 200k labeled images, 80 object categories and 250k people with keypoints.  
 
-With this repository, I am deriving from the TensorFlow research model object_detection and trying to put all things together, to do fancy things incl. infering on live video data. Applying it to Robotics is one of the major goals.
+This repository derives from the Jupyter notebook of TensorFlow's Object Detection API and includes an Ansible playbook to easily setup your system to run (pretrained) models, to do fancy things incl. infering on live video data. Applying it to Robotics is one of the major goals.
 
 Find here some highly recommended links:
 * Google announcement: https://research.googleblog.com/2017/06/supercharge-your-computer-vision-models.html
-* COCO detection challenge (and of course the dataset, results ...): http://cocodataset.org/
+* COCO detection challenge (incl. dataset, results): http://cocodataset.org/
 * CVPR 2017 Paper describing the models in detail: https://arxiv.org/abs/1611.10012
 * TensorFlow research model and object_detection API: https://github.com/tensorflow/models/tree/master/research/object_detection
 
+This repository assumes you have an Ubuntu 16.04 x86_64 running Python 3.(5.X).
+
 # GPU Acceleration
 
-For GPU-accelerated tensorflow under Ubuntu 16.04 x86_64, ensure you do or have done the following: 
+For GPU-accelerated tensorflow, ensure you do or have done the following: 
 
 1. You have a GPU with CUDA Compute Capability 3.0 or higher.  
    Check via https://developer.nvidia.com/cuda-gpus for a list of supported GPU cards.  
