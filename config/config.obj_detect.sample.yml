@@ -1,0 +1,8 @@
+---
+
+## ATTENTION: Do not modify 'config.object_detection.sample.yml' !! You should create a copy named 'config.object_detection.yml' and modify that one !!
+
+
+model_name: 'ssd_mobilenet_v1_coco_11_06_2017'
+model_dl_base_path: 'http://download.tensorflow.org/models/object_detection/'
+model_dl_file_format: '.tar.gz'

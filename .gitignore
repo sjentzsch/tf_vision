@@ -1,6 +1,9 @@
 # our custom Ansible configuration
 config/config.local.yml
 
+# our custom obj_detect configuration
+config/config.obj_detect.yml
+
 # nano swp files and gedit temp files
 *.swp
 *~

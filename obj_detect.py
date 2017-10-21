@@ -7,14 +7,15 @@ import tensorflow as tf
 import zipfile
 import time
 import cv2
+import yaml
 
 from Xlib import display, X
 
 from collections import defaultdict
 from io import StringIO
-#from PIL import Image
+from PIL import Image
 
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
 #cap = cv2.VideoCapture('../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4')
 
 sys.path.append('../tensorflow_models/research')
@@ -24,16 +25,23 @@ sys.path.append('../tensorflow_models/research/object_detection')
 from utils import label_map_util
 from utils import visualization_utils as vis_util
 
+
+# Load config values from config.obj_detect.sample.yml (as default values) updated by optional user-specific config.obj_detect.yml
+## see also http://treyhunner.com/2016/02/how-to-merge-dictionaries-in-python/
+cfg = yaml.load(open("config/config.obj_detect.sample.yml", 'r'))
+if os.path.isfile("config/config.obj_detect.yml"):
+  cfg_user = yaml.load(open("config/config.obj_detect.yml", 'r'))
+  cfg.update(cfg_user)
+#for section in cfg:
+#  print(section, ":", cfg[section])
+
+
+
 # Any model exported using the `export_inference_graph.py` tool can be loaded here simply by changing `PATH_TO_CKPT` to point to a new .pb file.
 # See the [detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) for a list of other models that can be run out-of-the-box with varying speeds and accuracies.
 
-# What model to download.
-MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
-MODEL_FILE = MODEL_NAME + '.tar.gz'
-DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
-
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
-PATH_TO_CKPT = '../' + MODEL_NAME + '/frozen_inference_graph.pb'
+PATH_TO_CKPT = '../' + cfg['model_name'] + '/frozen_inference_graph.pb'
 
 # List of the strings that is used to add correct label for each box.
 PATH_TO_LABELS = os.path.join('../tensorflow_models/research/object_detection/data', 'mscoco_label_map.pbtxt')
@@ -41,10 +49,11 @@ PATH_TO_LABELS = os.path.join('../tensorflow_models/research/object_detection/da
 NUM_CLASSES = 90
 
 # ## Download Model
+MODEL_FILE = cfg['model_name'] + cfg['model_dl_file_format']
 if not os.path.isfile(PATH_TO_CKPT):
   print('Model not found. We will download it now.')
   opener = urllib.request.URLopener()
-  opener.retrieve(DOWNLOAD_BASE + MODEL_FILE, '../' + MODEL_FILE)
+  opener.retrieve(cfg['model_dl_base_path'] + MODEL_FILE, '../' + MODEL_FILE)
   tar_file = tarfile.open('../' + MODEL_FILE)
   for file in tar_file.getmembers():
     file_name = os.path.basename(file.name)
@@ -95,25 +104,25 @@ with detection_graph.as_default():
 
     windowPlacedYet = False
 
-    while(cap.isOpened()):
-#    while(True):
+#    while(cap.isOpened()):
+    while(True):
 
         dsp = display.Display()
         root = dsp.screen().root
         reso = root.get_geometry()
-#        W,H = int(reso.width/2),int(reso.height/2)
+        W,H = int(reso.width/2),int(reso.height/2)
         #W,H = 600,600
-#        raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
-#        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
-#        image_np = np.array(image);
+        raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
+        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
+        image_np = np.array(image);
 
 #        image_np_bgr = np.array(ImageGrab.grab(bbox=(0,0,600,600))) # grab(bbox=(10,10,500,500)) or just grab()
 #        image_np = cv2.cvtColor(image_np_bgr, cv2.COLOR_BGR2RGB)
 
-        ret, image_np = cap.read()
-        if not ret:
-          print("Video finished!")
-          break
+#        ret, image_np = cap.read()
+#        if not ret:
+#          print("Video finished!")
+#          break
 
 #    for image_path in TEST_IMAGE_PATHS:
 #      image = Image.open(image_path)
@@ -150,5 +159,5 @@ with detection_graph.as_default():
             counter = 0
             start_time = time.time()
 
-cap.release()
+#cap.release()
 cv2.destroyAllWindows()
