@@ -6,17 +6,14 @@ import tarfile
 import tensorflow as tf
 import zipfile
 import time
+from Xlib import display
 import cv2
 import yaml
 
-from Xlib import display, X
 
 from collections import defaultdict
 from io import StringIO
-from PIL import Image
-
-#cap = cv2.VideoCapture(0)
-#cap = cv2.VideoCapture('../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4')
+#from PIL import Image
 
 sys.path.append('../tensorflow_models/research')
 sys.path.append('../tensorflow_models/research/slim')
@@ -25,6 +22,8 @@ sys.path.append('../tensorflow_models/research/object_detection')
 from utils import label_map_util
 from utils import visualization_utils as vis_util
 
+from stuff.helper import FPS
+from stuff.input import ScreenInput, VideoInput
 
 # Load config values from config.obj_detect.sample.yml (as default values) updated by optional user-specific config.obj_detect.yml
 ## see also http://treyhunner.com/2016/02/how-to-merge-dictionaries-in-python/
@@ -35,7 +34,15 @@ if os.path.isfile("config/config.obj_detect.yml"):
 #for section in cfg:
 #  print(section, ":", cfg[section])
 
-
+# Define input
+screen = display.Display().screen().root.get_geometry()
+if cfg['input_type'] == 'screen':
+  input = ScreenInput(0, 0, int(screen.width/2), int(screen.height/2))
+elif cfg['input_type'] == 'video':
+  input = VideoInput(cfg['input_video'])
+else:
+  print('No valid input type given. Exit.')
+  sys.exit()
 
 # Any model exported using the `export_inference_graph.py` tool can be loaded here simply by changing `PATH_TO_CKPT` to point to a new .pb file.
 # See the [detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) for a list of other models that can be run out-of-the-box with varying speeds and accuracies.
@@ -97,32 +104,19 @@ with detection_graph.as_default():
     detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
     num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
-    # for frame rate calculation
-    start_time = time.time()
-    x = 3 # displays the frame rate every x seconds
-    counter = 0
+    # TODO: Usually FPS calculation lives in a separate thread. As is now, the interval is a minimum value for each iteration.
+    fps = FPS(cfg['fps_interval']).start()
 
     windowPlacedYet = False
 
-#    while(cap.isOpened()):
-    while(True):
-
-        dsp = display.Display()
-        root = dsp.screen().root
-        reso = root.get_geometry()
-        W,H = int(reso.width/2),int(reso.height/2)
-        #W,H = 600,600
-        raw = root.get_image(0, 0, W, H, X.ZPixmap, 0xffffffff)
-        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "RGBX")
-        image_np = np.array(image);
+    while(input.isActive()):
+        ret, image_np = input.getImage()
+        if not ret:
+          print("No frames grabbed from input (anymore)! Exit.")
+          break
 
 #        image_np_bgr = np.array(ImageGrab.grab(bbox=(0,0,600,600))) # grab(bbox=(10,10,500,500)) or just grab()
 #        image_np = cv2.cvtColor(image_np_bgr, cv2.COLOR_BGR2RGB)
-
-#        ret, image_np = cap.read()
-#        if not ret:
-#          print("Video finished!")
-#          break
 
 #    for image_path in TEST_IMAGE_PATHS:
 #      image = Image.open(image_path)
@@ -150,14 +144,14 @@ with detection_graph.as_default():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         if not windowPlacedYet:
-          cv2.moveWindow('object detection', (int)(reso.width/3), (int)(reso.height/3))
+          cv2.moveWindow('object detection', (int)(screen.width/3), (int)(screen.height/3))
           windowPlacedYet = True
 
-        counter+=1
-        if (time.time() - start_time) > x :
-            print("FPS: ", counter / (time.time() - start_time))
-            counter = 0
-            start_time = time.time()
+        fps.update()
 
-#cap.release()
+fps.stop()
+print('[INFO] elapsed time (total): {:.2f}'.format(fps.elapsed()))
+print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
+
+input.cleanup()
 cv2.destroyAllWindows()

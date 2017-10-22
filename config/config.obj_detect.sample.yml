@@ -6,3 +6,14 @@
 model_name: 'ssd_mobilenet_v1_coco_11_06_2017'
 model_dl_base_path: 'http://download.tensorflow.org/models/object_detection/'
 model_dl_file_format: '.tar.gz'
+
+# re-calculates and displays FPS rate every x seconds
+fps_interval: 3
+
+# choose your input: screen, video
+input_type: screen
+
+# for video input: choose either the device id (camera index) or a filename
+## will be passed to OpenCV VideoCapture
+#input_video: '../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4'
+input_video: 0
