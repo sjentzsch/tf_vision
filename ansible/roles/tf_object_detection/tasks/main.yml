@@ -42,3 +42,7 @@
   args:
     chdir: "../../{{ tf_models_repo_name }}/research/"
 
+- name: Compile the grab_screen C code used to natively grab the screen via xlib
+  command: gcc -shared -O3 -Wall -fPIC -Wl,-soname,prtscn -o grab_screen.so grab_screen.c -lX11
+  args:
+    chdir: "../stuff/"

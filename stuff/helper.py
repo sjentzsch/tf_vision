@@ -54,9 +54,9 @@ class Visualizer:
         self._windowPlaced = False
         self._screen = display.Display().screen().root.get_geometry()
 
-    def show(self, image_np, boxes, classes, scores):
+    def draw(self, image_np, boxes, classes, scores):
         if not self._enabled:
-          return True
+          return
 
         vis_util.visualize_boxes_and_labels_on_image_array(
             image_np,
@@ -66,6 +66,10 @@ class Visualizer:
             category_index,
             use_normalized_coordinates=True,
             line_thickness=8)
+
+    def show(self, image_np):
+        if not self._enabled:
+          return True
 
         cv2.imshow('Visualizer', image_np) # alternatively as 2nd param: cv2.resize(image_np, (800, 600)))
         if not self._windowPlaced:

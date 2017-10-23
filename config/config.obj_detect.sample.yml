@@ -10,11 +10,12 @@ model_dl_file_format: '.tar.gz'
 # re-calculates and displays FPS rate every x seconds
 fps_interval: 3
 
-# choose your input: screen, video
+# choose your input: screen, screenpy, video
+## Note: screenpy (which uses Xlib Python-only) takes about 1586ms to capture the screen, screen (native using C lib) about 30ms (!) for a 1920x1080 screen (for a smaller screen the difference becomes smaller)
 input_type: screen
 
 # for video input: choose either the device id (camera index) or a filename
-## will be passed to OpenCV VideoCapture
+## Note: Value will be passed to OpenCV VideoCapture (see OpenCV documentation)
 #input_video: '../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4'
 input_video: 0
 
