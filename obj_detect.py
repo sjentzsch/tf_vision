@@ -5,11 +5,10 @@ import sys
 import tarfile
 import tensorflow as tf
 import zipfile
-import time
+from datetime import datetime
 from Xlib import display
 import cv2
 import yaml
-
 
 from collections import defaultdict
 from io import StringIO
@@ -19,10 +18,7 @@ sys.path.append('../tensorflow_models/research')
 sys.path.append('../tensorflow_models/research/slim')
 sys.path.append('../tensorflow_models/research/object_detection')
 
-from utils import label_map_util
-from utils import visualization_utils as vis_util
-
-from stuff.helper import FPS
+from stuff.helper import FPS, Visualizer
 from stuff.input import ScreenInput, VideoInput
 
 # Load config values from config.obj_detect.sample.yml (as default values) updated by optional user-specific config.obj_detect.yml
@@ -50,10 +46,7 @@ else:
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
 PATH_TO_CKPT = '../' + cfg['model_name'] + '/frozen_inference_graph.pb'
 
-# List of the strings that is used to add correct label for each box.
-PATH_TO_LABELS = os.path.join('../tensorflow_models/research/object_detection/data', 'mscoco_label_map.pbtxt')
 
-NUM_CLASSES = 90
 
 # ## Download Model
 MODEL_FILE = cfg['model_name'] + cfg['model_dl_file_format']
@@ -79,12 +72,6 @@ with detection_graph.as_default():
     od_graph_def.ParseFromString(serialized_graph)
     tf.import_graph_def(od_graph_def, name='')
 
-# ## Loading label map
-# Label maps map indices to category names, so that when our convolution network predicts `5`, we know that this corresponds to `airplane`.  Here we use internal utility functions, but anything that returns a dictionary mapping integers to appropriate string labels would be fine
-label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
-category_index = label_map_util.create_category_index(categories)
-
 # # Detection
 PATH_TO_TEST_IMAGES_DIR = 'test_images'
 TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, 'image{}.jpg'.format(i)) for i in range(1, 3) ]
@@ -107,16 +94,20 @@ with detection_graph.as_default():
     # TODO: Usually FPS calculation lives in a separate thread. As is now, the interval is a minimum value for each iteration.
     fps = FPS(cfg['fps_interval']).start()
 
-    windowPlacedYet = False
+    vis = Visualizer(cfg['visualizer_enabled'])
 
     while(input.isActive()):
+
+#        startTime=datetime.now()
+
         ret, image_np = input.getImage()
         if not ret:
-          print("No frames grabbed from input (anymore)! Exit.")
+          print("No frames grabbed from input (anymore). Exit.")
           break
 
-#        image_np_bgr = np.array(ImageGrab.grab(bbox=(0,0,600,600))) # grab(bbox=(10,10,500,500)) or just grab()
-#        image_np = cv2.cvtColor(image_np_bgr, cv2.COLOR_BGR2RGB)
+#        timeElapsed=datetime.now()-startTime
+#        print('1 Time elpased (hh:mm:ss.ms) {}'.format(timeElapsed))
+#        startTime=datetime.now()
 
 #    for image_path in TEST_IMAGE_PATHS:
 #      image = Image.open(image_path)
@@ -130,22 +121,11 @@ with detection_graph.as_default():
         (boxes, scores, classes, num) = sess.run(
             [detection_boxes, detection_scores, detection_classes, num_detections],
             feed_dict={image_tensor: image_np_expanded})
-        # Visualization of the results of a detection.
-        vis_util.visualize_boxes_and_labels_on_image_array(
-            image_np,
-            np.squeeze(boxes),
-            np.squeeze(classes).astype(np.int32),
-            np.squeeze(scores),
-            category_index,
-            use_normalized_coordinates=True,
-            line_thickness=8)
 
-        cv2.imshow('object detection', image_np) # alternatively as 2nd param: cv2.resize(image_np, (800, 600)))
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-        if not windowPlacedYet:
-          cv2.moveWindow('object detection', (int)(screen.width/3), (int)(screen.height/3))
-          windowPlacedYet = True
+        ret = vis.show(image_np, boxes, classes, scores)
+        if not ret:
+          print("User asked to quit. Exit")
+          break
 
         fps.update()
 
@@ -154,4 +134,4 @@ print('[INFO] elapsed time (total): {:.2f}'.format(fps.elapsed()))
 print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
 
 input.cleanup()
-cv2.destroyAllWindows()
+vis.cleanup()

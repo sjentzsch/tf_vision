@@ -17,3 +17,6 @@ input_type: screen
 ## will be passed to OpenCV VideoCapture
 #input_video: '../opencv_extra/testdata/highgui/video/big_buck_bunny.mp4'
 input_video: 0
+
+# visualize the results of the object detection
+visualizer_enabled: True
