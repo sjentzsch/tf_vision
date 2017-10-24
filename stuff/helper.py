@@ -81,3 +81,27 @@ class Visualizer:
 
     def cleanup(self):
         cv2.destroyAllWindows()
+
+
+class Processor:
+    def __init__(self):
+        pass
+
+    def process(self, boxes, scores, classes, num, image_shape):
+
+        # TODO: There is the chance of overlapping detections, i.e., a caw and a dog are recognized either with exactly or very similar bounding boxes => filter those?
+
+        print('*****')
+        for i in range(boxes.shape[0]):
+          if scores[i] > 0.5:
+            if classes[i] in category_index.keys():
+              class_name = category_index[classes[i]]['name']
+            else:
+              class_name = 'N/A'
+            ymin, xmin, ymax, xmax = tuple(boxes[i].tolist())
+            (left, right, top, bottom) = (int(xmin * image_shape[1]), int(xmax * image_shape[1]), int(ymin * image_shape[0]), int(ymax * image_shape[0]))
+            display_str = '{}: {}% at image coordinates (({}, {}) to ({}, {}))'.format(class_name, int(100*scores[i]), left, top, right, bottom)
+            print(display_str)
+
+    def cleanup(self):
+        pass

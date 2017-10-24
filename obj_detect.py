@@ -5,20 +5,18 @@ import sys
 import tarfile
 import tensorflow as tf
 import zipfile
+from collections import defaultdict
+from io import StringIO
 from datetime import datetime, timedelta
 from Xlib import display
 import cv2
 import yaml
 
-from collections import defaultdict
-from io import StringIO
-#from PIL import Image
-
 sys.path.append('../tensorflow_models/research')
 sys.path.append('../tensorflow_models/research/slim')
 sys.path.append('../tensorflow_models/research/object_detection')
 
-from stuff.helper import FPS, Visualizer
+from stuff.helper import FPS, Visualizer, Processor
 from stuff.input import ScreenInput, ScreenPyInput, VideoInput
 
 # Load config values from config.obj_detect.sample.yml (as default values) updated by optional user-specific config.obj_detect.yml
@@ -83,26 +81,26 @@ with detection_graph.as_default():
 
     # TODO: Usually FPS calculation lives in a separate thread. As is now, the interval is a minimum value for each iteration.
     fps = FPS(cfg['fps_interval']).start()
-
     vis = Visualizer(cfg['visualizer_enabled'])
+    proc = Processor()
 
     while(input.isActive()):
-      startTime=datetime.now()
+#      startTime=datetime.now()
 
       ret, image_np = input.getImage()
       if not ret:
         print("No frames grabbed from input (anymore). Exit.")
         break
 
-      timeElapsed=datetime.now()-startTime
+#      timeElapsed=datetime.now()-startTime
 #      print('1 Time elpased (hh:mm:ss.ms) {}'.format(timeElapsed))
-      startTime=datetime.now()
+#      startTime=datetime.now()
 
       # Run the detection (expand dimensions since the model expects images to have shape: [1, None, None, 3])
       image_np_expanded = np.expand_dims(image_np, axis=0)
       (boxes, scores, classes, num) = sess.run([detection_boxes, detection_scores, detection_classes, num_detections], feed_dict={image_tensor: image_np_expanded})
 
-#      print(boxes, scores, classes, num)
+      proc.process(np.squeeze(boxes), np.squeeze(scores), np.squeeze(classes).astype(np.int32), num, image_np.shape)
 
       vis.draw(image_np, boxes, classes, scores)
       ret = vis.show(image_np)
@@ -118,3 +116,4 @@ print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
 
 input.cleanup()
 vis.cleanup()
+proc.cleanup()
