@@ -1,8 +1,8 @@
 ---
 
-- name: Clone the TensorFlow Models to '{{ tf_models_repo_name }}' and set branch to '{{ tf_models_repo_branch }}'
+- name: Clone the TensorFlow Models from GitHub '{{ tf_models_repo_url }}' to '{{ tf_models_repo_name }}' and set branch to '{{ tf_models_repo_branch }}'
   git:
-    repo: https://github.com/tensorflow/models.git
+    repo: "https://github.com/{{ tf_models_repo_url }}.git"
     dest: "../../{{ tf_models_repo_name }}"
     force: yes
     version: "{{ tf_models_repo_branch }}"
