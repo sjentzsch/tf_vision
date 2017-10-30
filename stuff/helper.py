@@ -7,6 +7,8 @@ import cv2
 from utils import label_map_util
 from utils import visualization_utils as vis_util
 
+from stuff.speech_synthesis import SpeechSynthesizer
+
 # Loading label map (mapping indices to category names, e.g. 5 -> airplane)
 NUM_CLASSES = 90
 PATH_TO_LABELS = os.path.join('../tensorflow_models/research/object_detection/data', 'mscoco_label_map.pbtxt')
@@ -85,11 +87,13 @@ class Visualizer:
 
 class Processor:
     def __init__(self):
-        pass
+        self._speech = SpeechSynthesizer()
 
     def process(self, boxes, scores, classes, num, image_shape):
 
         # TODO: There is the chance of overlapping detections, i.e., a caw and a dog are recognized either with exactly or very similar bounding boxes => filter those?
+
+        obj = []
 
         print('*****')
         for i in range(boxes.shape[0]):
@@ -100,8 +104,19 @@ class Processor:
               class_name = 'N/A'
             ymin, xmin, ymax, xmax = tuple(boxes[i].tolist())
             (left, right, top, bottom) = (int(xmin * image_shape[1]), int(xmax * image_shape[1]), int(ymin * image_shape[0]), int(ymax * image_shape[0]))
+            obj.append([class_name, int(100*scores[i]), left, top, right, bottom])
             display_str = '{}: {}% at image coordinates (({}, {}) to ({}, {}))'.format(class_name, int(100*scores[i]), left, top, right, bottom)
             print(display_str)
+
+        def getIndefiniteArticle(word):
+            """Simplified way of choosing an or a for the following word; of course, there are many exceptions and not the letter but the sound (vowel vs. consonant) is important.
+            But hey, for the COCO dataset there should not be any exceptions!
+            See also https://www.englishclub.com/pronunciation/a-an.htm
+            """
+            return 'an' if word[:1].lower() in 'aeiou' else 'a'
+
+        if(len(obj) > 0):
+            self._speech.request("I am " + str(obj[0][1]) + "% certain I see " + getIndefiniteArticle(obj[0][0]) + " " + obj[0][0])
 
     def cleanup(self):
         pass

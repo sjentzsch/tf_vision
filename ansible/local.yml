@@ -10,6 +10,8 @@
 
   - { role: tensorflow_models, tags: ['tensorflow_models'] }
 
+  - { role: aws_polly, tags: ['aws_polly'] }
+
   - { role: tf_object_detection, tags: ['tf_object_detection,'] }
 
   - { role: provisioning_metadata_end, tags: ['always'] }

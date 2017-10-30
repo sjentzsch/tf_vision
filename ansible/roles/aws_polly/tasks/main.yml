@@ -1,0 +1,12 @@
+---
+
+- name: Install boto3 (AWS SDK for Python)
+  pip:
+    name: "{{ item }}"
+    state: latest
+    executable: pip3
+    extra_args: --user
+  with_items:
+    - boto3
+
+# TODO: handle credentials
