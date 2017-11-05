@@ -15,6 +15,8 @@ This repository assumes you have an Ubuntu 16.04 x86_64 running Python 3.(5.X).
 
 # GPU Acceleration
 
+> Note: As of current TensorFlow version 1.4.0: `All our prebuilt binaries have been built with CUDA 8 and cuDNN 6. We anticipate releasing TensorFlow 1.5 with CUDA 9 and cuDNN 7.` However, building from source with 1.4.0 using CUDA 9 and cuDNN 7 should be fine and working.
+
 For GPU-accelerated tensorflow, ensure you do or have done the following: 
 
 1. You have a GPU with CUDA Compute Capability 3.0 or higher.  
