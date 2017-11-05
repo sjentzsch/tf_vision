@@ -75,6 +75,36 @@
   register: opencv_extra_repo_state
 
 - block:
+    - name: Check if there is a previous OpenCV build
+      stat: path="../../opencv/build/install_manifest.txt"
+      register: opencv_prev_build
+
+    - block:
+        - name: Uninstall previous OpenCV build
+          make: target=uninstall
+          args:
+            chdir: "../../opencv/build"
+          become: yes
+
+        - name: Remove old OpenCV build folder
+          file: path="../../opencv/build" state=absent
+      when: opencv_prev_build.stat.exists
+
+    - name: Remove remainings from previous OpenCV build (1/2)
+      file: path="{{ item }}" state=absent
+      with_items:
+        - /usr/local/include/opencv
+        - /usr/local/include/opencv2
+        - /usr/local/share/OpenCV
+      become: yes
+
+      # with_fileglob unfortunately seems to ignore symlinks, but they should not cause harm ...
+    - name: Remove remainings from previous OpenCV build (2/2)
+      file: path="{{ item }}" state=absent
+      with_fileglob:
+        - /usr/local/lib/libopencv_*
+      become: yes
+
     - name: Ensure build folder inside OpenCV repo
       file: path="../../opencv/build" state=directory
 
@@ -96,7 +126,9 @@
         -D BUILD_PERF_TESTS=OFF
         -D BUILD_TESTS=OFF
         -D BUILD_DOCS=OFF
-        -D ENABLE_FAST_MATH=1 .."
+        -D BUILD_EXAMPLES={{ opencv_build_examples }}
+        -D ENABLE_FAST_MATH=1
+        -D PROTOBUF_PROTOC_EXECUTABLE=/usr/bin/protoc .."
       args:
         chdir: "../../opencv/build"
 
@@ -111,7 +143,7 @@
         chdir: "../../opencv/build"
       become: yes
   when:
-    - not opencv_installed.stat.exists
+    - not opencv_installed.stat.exists or opencv_repo_state.changed or opencv_force_rebuild
 
 - name: Add /usr/local/lib to system library paths
   lineinfile:

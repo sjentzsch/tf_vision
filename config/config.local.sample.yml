@@ -9,7 +9,7 @@ tf_enable_gpu: false
 
 tf_build_from_source: false
 tf_repo_name: tensorflow
-tf_repo_branch: v1.3.1
+tf_repo_branch: v1.4.0
 
 tf_models_repo_name: tensorflow_models
 tf_models_repo_url: tensorflow/models
@@ -19,7 +19,9 @@ tf_models_repo_branch: master
 
 # Note: Before switching to a new version, you can cleanup the previous by simply running 'sudo make uninstall' inside opencv/build/ folder
 
-opencv_version: 3.3.0
-opencv_repo_branch: 3.3.0
-opencv_contrib_repo_branch: 3.3.0
-opencv_extra_repo_branch: 3.3.0
+opencv_version: 3.3.1
+opencv_repo_branch: 3.3.1
+opencv_contrib_repo_branch: 3.3.1
+opencv_extra_repo_branch: 3.3.1
+opencv_build_examples: OFF
+opencv_force_rebuild: false
