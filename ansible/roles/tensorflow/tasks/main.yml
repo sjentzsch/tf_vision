@@ -8,6 +8,7 @@
   apt: name={{item}} state=latest
   with_items:
     - aptitude
+    - colordiff
     - wget
     - python-dev
     - python3-dev
