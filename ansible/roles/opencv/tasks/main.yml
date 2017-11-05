@@ -103,11 +103,13 @@
       file: path="{{ item }}" state=absent
       with_fileglob:
         - /usr/local/lib/libopencv_*
+      no_log: True
       become: yes
 
     - name: Ensure build folder inside OpenCV repo
       file: path="../../opencv/build" state=directory
 
+    # Note: libopencv_dnn_modern should be disabled for now (which it will by leaving out '-D PROTOBUF_PROTOC_EXECUTABLE=/usr/bin/protoc' lol) as it causes undefined symbol errors with protobuf (see also https://github.com/opencv/opencv/issues/10021)
     - name: CMake for OpenCV (no CUDA for now as not yet compatible with 9.0 and benefit for python is very limited)
       shell: >
         /bin/bash -ic "cmake
@@ -127,8 +129,7 @@
         -D BUILD_TESTS=OFF
         -D BUILD_DOCS=OFF
         -D BUILD_EXAMPLES={{ opencv_build_examples }}
-        -D ENABLE_FAST_MATH=1
-        -D PROTOBUF_PROTOC_EXECUTABLE=/usr/bin/protoc .."
+        -D ENABLE_FAST_MATH=1 .."
       args:
         chdir: "../../opencv/build"
 
