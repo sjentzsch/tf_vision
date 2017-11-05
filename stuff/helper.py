@@ -51,8 +51,8 @@ class FPS:
 
 
 class Visualizer:
-    def __init__(self, enabled):
-        self._enabled = enabled
+    def __init__(self, visualizer_enabled):
+        self._enabled = visualizer_enabled
         self._windowPlaced = False
         self._screen = display.Display().screen().root.get_geometry()
 
@@ -86,8 +86,10 @@ class Visualizer:
 
 
 class Processor:
-    def __init__(self):
-        self._speech = SpeechSynthesizer()
+    def __init__(self, speech_enabled):
+        self._speech_enabled = speech_enabled
+        if self._speech_enabled:
+          self._speech = SpeechSynthesizer()
 
     def process(self, boxes, scores, classes, num, image_shape):
 
@@ -115,7 +117,7 @@ class Processor:
             """
             return 'an' if word[:1].lower() in 'aeiou' else 'a'
 
-        if(len(obj) > 0):
+        if(self._speech_enabled and len(obj) > 0):
             self._speech.request("I am " + str(obj[0][1]) + "% certain I see " + getIndefiniteArticle(obj[0][0]) + " " + obj[0][0])
 
     def cleanup(self):

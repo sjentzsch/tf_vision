@@ -46,7 +46,7 @@ PATH_TO_CKPT = '../' + cfg['model_name'] + '/frozen_inference_graph.pb'
 # ## Download Model
 MODEL_FILE = cfg['model_name'] + cfg['model_dl_file_format']
 if not os.path.isfile(PATH_TO_CKPT):
-  print('Model not found. We will download it now.')
+  print('Model not found. Downloading it now.')
   opener = urllib.request.URLopener()
   opener.retrieve(cfg['model_dl_base_path'] + MODEL_FILE, '../' + MODEL_FILE)
   tar_file = tarfile.open('../' + MODEL_FILE)
@@ -82,7 +82,7 @@ with detection_graph.as_default():
     # TODO: Usually FPS calculation lives in a separate thread. As is now, the interval is a minimum value for each iteration.
     fps = FPS(cfg['fps_interval']).start()
     vis = Visualizer(cfg['visualizer_enabled'])
-    proc = Processor()
+    proc = Processor(cfg['speech_enabled'])
 
     while(input.isActive()):
 #      startTime=datetime.now()

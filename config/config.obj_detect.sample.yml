@@ -3,6 +3,7 @@
 ## ATTENTION: Do not modify 'config.object_detection.sample.yml' !! You should create a copy named 'config.object_detection.yml' and modify that one !!
 
 
+# see https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 model_name: 'ssd_mobilenet_v1_coco_11_06_2017'
 model_dl_base_path: 'http://download.tensorflow.org/models/object_detection/'
 model_dl_file_format: '.tar.gz'
@@ -21,3 +22,6 @@ input_video: 0
 
 # visualize the results of the object detection
 visualizer_enabled: True
+
+# synthesize speech (using Amazon Polly as of now)
+speech_enabled: True
