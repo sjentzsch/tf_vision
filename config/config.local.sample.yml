@@ -17,8 +17,6 @@ tf_models_repo_branch: master
 
 ## OpenCV
 
-# Note: Before switching to a new version, you can cleanup the previous by simply running 'sudo make uninstall' inside opencv/build/ folder
-
 opencv_version: 3.3.1
 opencv_repo_branch: 3.3.1
 opencv_contrib_repo_branch: 3.3.1
