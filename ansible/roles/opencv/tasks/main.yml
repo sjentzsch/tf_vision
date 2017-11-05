@@ -88,6 +88,7 @@
 
         - name: Remove old OpenCV build folder
           file: path="../../opencv/build" state=absent
+          become: yes
       when: opencv_prev_build.stat.exists
 
     - name: Remove remainings from previous OpenCV build (1/2)
