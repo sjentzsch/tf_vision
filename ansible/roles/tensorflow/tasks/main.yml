@@ -16,6 +16,7 @@
     - python3-pip
     - python3-numpy
     - python3-wheel
+    - python3-tk
     - unzip
     - debconf
     - debconf-utils
