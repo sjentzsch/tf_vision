@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 from Xlib import display
 import cv2
 import yaml
+import rospy
+import time
 
 sys.path.append('../tensorflow_models/research')
 sys.path.append('../tensorflow_models/research/slim')
@@ -18,6 +20,12 @@ sys.path.append('../tensorflow_models/research/object_detection')
 
 from stuff.helper import FPS, Visualizer, Processor
 from stuff.input import ScreenInput, ScreenPyInput, VideoInput
+
+
+def callback(self, data):
+  # rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.status[0].name)
+  print(self.msg)
+  time.sleep(5)
 
 # Load config values from config.obj_detect.sample.yml (as default values) updated by optional user-specific config.obj_detect.yml
 ## see also http://treyhunner.com/2016/02/how-to-merge-dictionaries-in-python/
@@ -33,7 +41,14 @@ if cfg['input_type'] == 'screen':
 elif cfg['input_type'] == 'screenpy':
   input = ScreenPyInput(0, 0, int(screen.width/2), int(screen.height/2))
 elif cfg['input_type'] == 'video':
+  print(cfg['input_video'])
   input = VideoInput(cfg['input_video'])
+  #input = VideoInput(0)
+  print(input.isActive())  # False
+  print(input.getImage())  #
+elif cfg['input_type'] == 'realsense':
+    rospy.init_node('listener', anonymous=True)
+    rospy.Subscriber('camera/depth/camera_info', 'sensor_msgs/CameraInfo', callback)
 else:
   print('No valid input type given. Exit.')
   sys.exit()
@@ -46,7 +61,7 @@ PATH_TO_CKPT = '../' + cfg['model_name'] + '/frozen_inference_graph.pb'
 # ## Download Model
 MODEL_FILE = cfg['model_name'] + cfg['model_dl_file_format']
 if not os.path.isfile(PATH_TO_CKPT):
-  print('Model not found. Downloading it now.')
+  print('Model not found. We will download it now.')
   opener = urllib.request.URLopener()
   opener.retrieve(cfg['model_dl_base_path'] + MODEL_FILE, '../' + MODEL_FILE)
   tar_file = tarfile.open('../' + MODEL_FILE)
@@ -82,12 +97,14 @@ with detection_graph.as_default():
     # TODO: Usually FPS calculation lives in a separate thread. As is now, the interval is a minimum value for each iteration.
     fps = FPS(cfg['fps_interval']).start()
     vis = Visualizer(cfg['visualizer_enabled'])
-    proc = Processor(cfg['speech_enabled'])
+    proc = Processor()
 
     while(input.isActive()):
 #      startTime=datetime.now()
 
       ret, image_np = input.getImage()
+      print('INPUT', input.getImage())
+
       if not ret:
         print("No frames grabbed from input (anymore). Exit.")
         break
