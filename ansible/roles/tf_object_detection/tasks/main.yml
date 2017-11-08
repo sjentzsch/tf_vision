@@ -1,5 +1,9 @@
 ---
 
+- name: Add user {{ ansible_user_id }} to group audio and video
+  user: name={{ ansible_user_id }} groups=video,audio append=yes
+  become: yes
+
 - name: Install dependencies through apt
   apt: name={{ item }} state=latest
   with_items:
