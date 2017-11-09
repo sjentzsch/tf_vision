@@ -4,7 +4,7 @@
 
 
 # see https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
-model_name: 'ssd_mobilenet_v1_coco_11_06_2017'
+model_name: 'ssd_mobilenet_v1_coco_2017_11_08'
 model_dl_base_path: 'http://download.tensorflow.org/models/object_detection/'
 model_dl_file_format: '.tar.gz'
 
