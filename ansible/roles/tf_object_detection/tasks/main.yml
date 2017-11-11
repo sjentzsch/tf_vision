@@ -36,6 +36,12 @@
     - libx11-dev
   become: yes
 
+- name: Install VLC required for speech output
+  apt: name={{ item }} state=latest
+  with_items:
+    - vlc
+  become: yes
+
 - name: Setup OpenCV
   import_role:
     name: opencv
