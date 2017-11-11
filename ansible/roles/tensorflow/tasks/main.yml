@@ -5,7 +5,7 @@
   become: yes
 
 - name: Install common packages (mostly python and pip)
-  apt: name={{item}} state=latest
+  apt: name={{ item }} state=latest
   with_items:
     - aptitude
     - colordiff
@@ -14,9 +14,9 @@
     - python3-dev
     - python-pip
     - python3-pip
-    - python3-numpy
-    - python3-wheel
-    - python3-tk
+    - "{{ python_name }}-numpy"
+    - "{{ python_name }}-wheel"
+    - "{{ python_name }}-tk"
     - unzip
     - debconf
     - debconf-utils
@@ -36,19 +36,19 @@
 - include_tasks: tf_gpu_req.yml
   when: tf_enable_gpu
 
-- name: Install latest tensorflow with native pip3 (no GPU support)
+- name: Install latest tensorflow with native {{ pip_version }} package (no GPU support)
   pip:
     name: tensorflow
     state: latest
-    executable: pip3
+    executable: "{{ pip_version }}"
   become: yes
   when: not tf_build_from_source and not tf_enable_gpu
 
-- name: Install latest tensorflow with native pip3 (with GPU support)
+- name: Install latest tensorflow with native {{ pip_version }} package (with GPU support)
   pip:
     name: tensorflow-gpu
     state: latest
-    executable: pip3
+    executable: "{{ pip_version }}"
   become: yes
   when: not tf_build_from_source and tf_enable_gpu
 

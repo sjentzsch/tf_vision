@@ -3,7 +3,7 @@
 ## ATTENTION: Do not modify 'config.local.sample.yml' !! You should create a copy named 'config.local.yml' and modify that one !!
 
 
-## Tensorflow
+## TensorFlow
 
 tf_enable_gpu: false
 
@@ -15,6 +15,7 @@ tf_models_repo_name: tensorflow_models
 tf_models_repo_url: tensorflow/models
 tf_models_repo_branch: master
 
+
 ## OpenCV
 
 opencv_version: 3.3.1
@@ -23,3 +24,10 @@ opencv_contrib_repo_branch: 3.3.1
 opencv_extra_repo_branch: 3.3.1
 opencv_build_examples: OFF
 opencv_force_rebuild: false
+
+
+## Python
+
+# put either 2 for Python 2.7 or 3 for Python 3.5
+# Note: When switching between versions, force rebuild of OpenCV and TensorFlow once (i.e., set opencv_force_rebuild to true)
+python_version: 3

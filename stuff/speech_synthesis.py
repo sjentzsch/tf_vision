@@ -8,9 +8,11 @@ from botocore.exceptions import BotoCoreError, ClientError
 from contextlib import closing
 import os
 import sys
-from contextlib import suppress
 from threading import Thread
-from queue import LifoQueue, Empty
+if sys.version_info.major < 3:
+    from Queue import LifoQueue, Empty
+else:
+    from queue import LifoQueue, Empty
 from time import sleep
 from tempfile import gettempdir
 
@@ -30,8 +32,11 @@ class SpeechSynthesizer:
 
     def request(self, text):
         """Clear queue (ignore it being empty) and add text, both non-blocking"""
-        with suppress(Empty):
+        # for Python 3.4+ this could be written as: with suppress(Empty): ... assuming: from contextlib import suppress
+        try:
             self._speak_queue.get_nowait()
+        except Empty:
+            pass
         self._speak_queue.put_nowait(text)
 
     def run(self):

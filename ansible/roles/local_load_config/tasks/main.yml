@@ -10,3 +10,14 @@
 - name: Overwrite Configuration file from user-specific local configuration file
   include_vars: ../config/config.local.yml
   when: config_st.stat.exists == True
+
+- name: Assert Python version properly set
+  assert:
+    that:
+      - "python_version == 2 or python_version == 3"
+    msg: "python_version must be set to either 2 or 3 in config/config.local.yml"
+
+- name: Set variables according to Python version set to {{ python_version }}
+  set_fact:
+    pip_version: "{{ 'pip2' if python_version == 2 else 'pip3' }}"
+    python_name: "{{ 'python' if python_version == 2 else 'python3' }}"

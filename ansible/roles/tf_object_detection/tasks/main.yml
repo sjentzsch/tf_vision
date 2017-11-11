@@ -10,11 +10,11 @@
     - protobuf-compiler
   become: yes
 
-- name: Install dependencies through pip
+- name: Install dependencies through {{ pip_version }}
   pip:
     name: "{{ item }}"
     state: latest
-    executable: pip3
+    executable: "{{ pip_version }}"
   with_items:
     - pillow
     - lxml
@@ -32,7 +32,7 @@
 - name: Install xlib required for screen capturing
   apt: name={{ item }} state=latest
   with_items:
-    - python3-xlib
+    - "{{ python_name }}-xlib"
     - libx11-dev
   become: yes
 
