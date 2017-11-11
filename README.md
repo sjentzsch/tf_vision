@@ -73,7 +73,9 @@ For GPU-accelerated tensorflow, ensure you do or have done the following:
 1. Setup log folder for Ansible (replace `sjentzsch` with your local user to run Ansible from):
 
    ```
-   sudo mkdir -p /var/log/ansible/ && sudo chown -R sjentzsch:adm /var/log/ansible/ && sudo chmod 2750 /var/log/ansible/
+   sudo mkdir -p /var/log/ansible/
+   sudo chown -R sjentzsch:adm /var/log/ansible/
+   sudo chmod 2750 /var/log/ansible/
    ```
 
 2. Create a new and clean folder called e.g. `ml` somewhere, and inside, clone `setup_common_lib` and this GitHub repository (here with SSH keys):
@@ -85,7 +87,13 @@ For GPU-accelerated tensorflow, ensure you do or have done the following:
 
    Note: Currently, the repository `setup_common_lib` lives inside restricted BSH SDD.
 
-3. Inside `ml/tf_vision/ansible/` setup your machine by running Ansible:
+3. Inside `ml/tf_vision/config/` the YAML file `config.local.sample.yml` contains the default configuration on how to provision your machine.
+
+   This includes e.g. enabling or disabling TensorFlow GPU acceleration, TensorFlow version to use, OpenCV version to use, Python version to use.
+
+   In order to overwrite default values, create a local copy `cp config.local.sample.yml config.local.yml` and modify values inside `config.local.yml` only.
+
+4. Inside `ml/tf_vision/ansible/` setup your machine by running Ansible:
 
    ```
    ansible-playbook -i hosts -v local.yml -K
@@ -95,11 +103,17 @@ For GPU-accelerated tensorflow, ensure you do or have done the following:
 
 # Run
 
-Inside `ml/tf_vision/` simply run:
+1. Inside `ml/tf_vision/config/` the YAML file `config.obj_detect.sample.yml` contains the default configuration to run.
 
-```
-# Python 2.7
-python obj_detect.py
-# Python 3.5
-python3 obj_detect.py
-```
+   This includes e.g. the model to use for object detection, the source for the video stream to analyze upon, and if certain components (like the visualizer or the speech synthesis) should be enabled.
+
+   In order to overwrite default values, create a local copy `cp config.obj_detect.sample.yml config.obj_detect.yml` and modify values inside `config.obj_detect.yml` only.
+
+2. Inside `ml/tf_vision/` simply run:
+
+   ```
+   # Python 2.7
+   python obj_detect.py
+   # Python 3.5
+   python3 obj_detect.py
+   ```
