@@ -207,8 +207,7 @@ See also: https://www.tensorflow.org/install/install_sources
 In case you want to remove previous builds again (choose proper pip version again!):
 
 ```
-sudo pip3 uninstall tensorflow
-sudo pip3 uninstall tensorflow-tensorboard
+sudo pip3 uninstall tensorflow tensorflow-tensorboard
 ```
 
 # Run
