@@ -105,7 +105,13 @@ For GPU-accelerated tensorflow, ensure you do or have done the following:
 
 > Note: As of now, if you configured to build TensorFlow from Source, you need to follow this guide after running the Ansible playbook. In the future, this should mostly be handled by Ansible.
 
-Inside `ml/tensorflow` (default location) run `./configure`.
+First, make sure to remove previous builds again (choose pip2 for Python 2 or pip3 for Python 3), e.g.:
+
+```
+sudo pip3 uninstall tensorflow tensorflow-tensorboard
+```
+
+For a new build, inside `ml/tensorflow` (default location), run `./configure`.
 
 Here is my sample dialogue and the answers I gave to the questions: 
 
@@ -203,12 +209,6 @@ sudo pip3 install /tmp/tensorflow_pkg/tensorflow-1.4.0-cp35-cp35m-linux_x86_64.w
 ```
 
 See also: https://www.tensorflow.org/install/install_sources
-
-In case you want to remove previous builds again (choose proper pip version again!):
-
-```
-sudo pip3 uninstall tensorflow tensorflow-tensorboard
-```
 
 # Run
 
