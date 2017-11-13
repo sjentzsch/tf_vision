@@ -31,3 +31,8 @@ opencv_force_rebuild: false
 # put either 2 for Python 2.7 or 3 for Python 3.5
 # Note: When switching between versions, force rebuild of OpenCV and TensorFlow once (i.e., set opencv_force_rebuild to true)
 python_version: 3
+
+
+## ROS (Kinetic Kame)
+
+ros_enabled: false

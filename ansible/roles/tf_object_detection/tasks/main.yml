@@ -47,6 +47,12 @@
     name: opencv
     allow_duplicates: false
 
+- name: Setup ROS
+  import_role:
+    name: ros_kinetic
+    allow_duplicates: false
+  when: ros_enabled
+
 - name: Compile the Protobuf libraries used by TensorFlow Object Detection API
   shell: protoc object_detection/protos/*.proto --python_out=.
   args:

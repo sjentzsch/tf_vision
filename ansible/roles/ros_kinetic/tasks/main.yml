@@ -1,0 +1,47 @@
+---
+
+# TODO: Configure your Ubuntu repositories to allow "restricted," "universe," and "multiverse."
+# see 1.1 of http://wiki.ros.org/kinetic/Installation/Ubuntu
+
+- name: Setup ROS apt package sources
+  apt_repository:
+    repo: deb http://packages.ros.org/ros/ubuntu xenial main
+    filename: 'ros-latest'
+  become: yes
+
+- name: Add apt key for ROS package source
+  apt_key:
+    keyserver: hkp://ha.pool.sks-keyservers.net:80
+    id: 421C365BD9FF1F717815A3895523BAEEB01FA116
+  become: yes
+
+- name: Install (resp. upgrade) ROS
+  apt:
+    name: ros-kinetic-desktop
+    state: latest
+    allow_unauthenticated: yes
+  become: yes
+
+# Note: Careful! Don't install Debian Upstream packages!
+#- name: Install required packages to work with ROS properly
+#  apt: name={{ item }} state=latest
+#  with_items:
+#    - ros-kinetic-roslaunch
+#    - python-rosdep
+#    - python-rosinstall
+#    - python-rosinstall-generator
+#    - python-wstool
+#    - build-essential
+#  become: yes
+
+- name: Check if ROS was already initialized
+  stat: path="/etc/ros/rosdep/sources.list.d/20-default.list"
+  register: ros_initialized
+
+- name: Initialize rosdep
+  command: rosdep init
+  when: not ros_initialized.stat.exists
+  become: yes
+
+- name: Update rosdep
+  command: rosdep update
